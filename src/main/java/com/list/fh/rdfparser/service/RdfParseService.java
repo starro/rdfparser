@@ -34,23 +34,6 @@ public class RdfParseService {
     @Autowired
     private DcatInfoMapper mapper;
 
-    public void processExecute(String id, String targetDir) {
-        System.out.println("id: " + id + " targetDir: " + targetDir);
-
-        //원본 csv read 과정
-//        try {
-////            this.readCSV(id);
-//            this.createDcat();
-//            this.createRdf();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        //dcat 생성과정
-
-        //rdf 생성과정
-
-    }
-
     //csv 읽기
     private void readCSV() throws IOException {
         File csvFile = new File("D:\\test.csv");
@@ -192,17 +175,21 @@ public class RdfParseService {
         fos.close();
     }
 
-    public void createDcat(String name) throws Exception {
+    public void createFile(String appHome, String programId, String creationCycle, String resourceDir, String toUpload) throws Exception {
 
         List<DcatDatasetInfo> dcatInfoList = mapper.selectDatasetInfoList();
         List<DcatDistributionInfo> dcatDistributionInfoList = mapper.selectDistributionInfoList();
         List<DcatDataserviceInfo> dcatDataserviceInfoList = mapper.selectDataserviceInfoList();
 
-        //파일명제작
-        String path = "D:";
-        String pathSeperator = "\\";
-        String programId = name;
+        //프리픽스 선언
+        String defaultPrefix = "@prefix : <http://example.org/> .";
+        String rdfPrefix = "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .";
+        String rdfsPrefix = "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .";
+        String dcatPrefix = "@prefix dcat: <http://www.w3.org/ns/dcat#> .";
+        String dctPreFix = "@prefix dct: <http://purl.org/dc/terms/> .";
 
+        //파일경로명 제작
+        String targetPath = appHome + File.separator + toUpload + File.separator + programId + File.separator + creationCycle;
 
         //DATASET 제작 시작
         //dcat내용 제작을 위한 변수들
@@ -218,6 +205,11 @@ public class RdfParseService {
         String terminator = ".";
 
         LocalDateTime now;
+
+        //데이터셋 생성
+        //임시로 DcatSeq로 생성 파일들 구분
+        String datasetTargetPath = targetPath + File.separator + catalogDataSet;
+
         for (DcatDatasetInfo dcatInfo : dcatInfoList) {
             now = LocalDateTime.now();
             LocalDateTime nowTIme = LocalDateTime.of(now.getYear(),
@@ -227,37 +219,46 @@ public class RdfParseService {
 
             String fileCreateTIme = nowTIme.toString().replaceAll("[-T:]", "");
 
-            String targetPath = path + pathSeperator + programId + pathSeperator + dcatInfo.getDcatSeq() + pathSeperator + programId;
             String fileName = programId + "_" + fileCreateTIme;
 
-            File datasetFile = new File(targetPath);
+            String filePath = datasetTargetPath + File.separator + dcatInfo.getDcatSeq();
+
+            //파일경로 생성
+            File datasetFile = new File(filePath);
 
             if (!datasetFile.exists()) {
                 System.out.println("파일경로생성");
                 datasetFile.mkdirs();
             }
-
-            String datasetContent = seperator + catalogDataSet + newLine
-                    + tab + "a dcat" + seperator + catalogDataSet + space + semiCol + newLine
-                    + tab + "dct" + seperator + "accessRights" + space + dcatInfo.getDatasetAccessRights() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "conformsTo" + space + dcatInfo.getDatasetConformsTo() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "contactPoint" + space + dcatInfo.getDatasetContactPoint() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "creator" + space + dcatInfo.getDatasetCreator() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "description" + space + dcatInfo.getDatasetDescription() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "title" + space + dcatInfo.getDatasetTitle() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "issued" + space + dcatInfo.getDatasetIssued() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "modified" + space + dcatInfo.getDatasetModified() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "language" + space + dcatInfo.getDatasetLanguage() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "publisher" + space + dcatInfo.getDatasetPublisher() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "identifier" + space + dcatInfo.getDatasetIdentifier() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "theme" + space + dcatInfo.getDatasetTheme() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "type" + space + dcatInfo.getDatasetType() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "relation" + space + dcatInfo.getDatasetRelation() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "keyword" + space + dcatInfo.getDatasetKeyword() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "license" + space + dcatInfo.getDatasetLicense() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "distribution" + space + dcatInfo.getDatasetDistribution() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "spatial" + space + dcatInfo.getDatasetSpatial() + "@ko" + space + semiCol + newLine
-                    + tab + terminator;
+            //DCAT 파일 내용 제작
+            String datasetContent =
+                    defaultPrefix + newLine
+                            + rdfPrefix + newLine
+                            + rdfsPrefix + newLine
+                            + dcatPrefix + newLine
+                            + dctPreFix + newLine
+                            + newLine
+                            + seperator + catalogDataSet + newLine
+                            + tab + "a dcat" + seperator + catalogDataSet + space + semiCol + newLine
+                            + tab + "dct" + seperator + "accessRights" + space + dcatInfo.getDatasetAccessRights() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "conformsTo" + space + dcatInfo.getDatasetConformsTo() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "contactPoint" + space + dcatInfo.getDatasetContactPoint() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "creator" + space + dcatInfo.getDatasetCreator() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "description" + space + dcatInfo.getDatasetDescription() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "title" + space + dcatInfo.getDatasetTitle() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "issued" + space + dcatInfo.getDatasetIssued() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "modified" + space + dcatInfo.getDatasetModified() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "language" + space + dcatInfo.getDatasetLanguage() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "publisher" + space + dcatInfo.getDatasetPublisher() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "identifier" + space + dcatInfo.getDatasetIdentifier() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "theme" + space + dcatInfo.getDatasetTheme() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "type" + space + dcatInfo.getDatasetType() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "relation" + space + dcatInfo.getDatasetRelation() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "keyword" + space + dcatInfo.getDatasetKeyword() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "license" + space + dcatInfo.getDatasetLicense() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "distribution" + space + dcatInfo.getDatasetDistribution() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "spatial" + space + dcatInfo.getDatasetSpatial() + "@ko" + space + semiCol + newLine
+                            + tab + terminator;
 
             System.out.println(datasetContent);
 
@@ -269,6 +270,8 @@ public class RdfParseService {
             fos.close();
         }
 
+        //디스트리뷰선 생성
+        String distributionTargetPath = targetPath + File.separator + catalogDistribution;
 
         for (DcatDistributionInfo dcatInfo : dcatDistributionInfoList) {
             now = LocalDateTime.now();
@@ -279,10 +282,13 @@ public class RdfParseService {
 
             String fileCreateTIme = nowTIme.toString().replaceAll("[-T:]", "");
 
-            String targetPath = path + pathSeperator + programId + pathSeperator + dcatInfo.getDcatSeq() + pathSeperator + programId;
             String fileName = programId + "_" + fileCreateTIme;
 
-            File distributionFile = new File(targetPath);
+            //임시로 DcatSeq로 생성 파일들 구분
+            String filePath = distributionTargetPath + File.separator + dcatInfo.getDcatSeq();
+
+            // 파일경로 생성
+            File distributionFile = new File(filePath);
 
             if (!distributionFile.exists()) {
                 System.out.println("파일경로생성");
@@ -290,19 +296,27 @@ public class RdfParseService {
             }
             System.out.println(distributionFile.createNewFile());
 
-            String distributionContent = seperator + catalogDistribution + newLine
-                    + tab + "a dcat" + seperator + catalogDistribution + space + semiCol + newLine
-                    + tab + "dct" + seperator + "title" + space + dcatInfo.getDistributionTitle() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "description" + space + dcatInfo.getDistributionDescription() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "issued" + space + dcatInfo.getDistributionIssued() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "license" + space + dcatInfo.getDistributionLicense() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "accessUrl" + space + dcatInfo.getDistributionAccessUrl() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "accessService" + space + dcatInfo.getDistributionAccessService() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "downloadUrl" + space + dcatInfo.getDistributionDownloadUrl() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "spatialResolutionlnMeters" + space + dcatInfo.getDistributionSpatialResolutionlnMeters() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "format" + space + dcatInfo.getDistributionFormat() + "@ko" + space + semiCol + newLine
-                    + tab + "dct" + seperator + "compressFormat" + space + dcatInfo.getDistributionCompressFormat() + "@ko" + space + semiCol + newLine
-                    + tab + terminator;
+            //DCAT 파일 내용 제작
+            String distributionContent =
+                    defaultPrefix + newLine
+                            + rdfPrefix + newLine
+                            + rdfsPrefix + newLine
+                            + dcatPrefix + newLine
+                            + dctPreFix + newLine
+                            + newLine
+                            + seperator + catalogDistribution + newLine
+                            + tab + "a dcat" + seperator + catalogDistribution + space + semiCol + newLine
+                            + tab + "dct" + seperator + "title" + space + dcatInfo.getDistributionTitle() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "description" + space + dcatInfo.getDistributionDescription() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "issued" + space + dcatInfo.getDistributionIssued() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "license" + space + dcatInfo.getDistributionLicense() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "accessUrl" + space + dcatInfo.getDistributionAccessUrl() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "accessService" + space + dcatInfo.getDistributionAccessService() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "downloadUrl" + space + dcatInfo.getDistributionDownloadUrl() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "spatialResolutionlnMeters" + space + dcatInfo.getDistributionSpatialResolutionlnMeters() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "format" + space + dcatInfo.getDistributionFormat() + "@ko" + space + semiCol + newLine
+                            + tab + "dct" + seperator + "compressFormat" + space + dcatInfo.getDistributionCompressFormat() + "@ko" + space + semiCol + newLine
+                            + tab + terminator;
 
             System.out.println(distributionContent);
 
@@ -314,6 +328,9 @@ public class RdfParseService {
             fos.close();
         }
 
+        //데이터서비스 생성
+        String dataserviceTargetPath = targetPath + File.separator + catalogDataService;
+
         for (DcatDataserviceInfo dcatInfo : dcatDataserviceInfoList) {
             now = LocalDateTime.now();
             LocalDateTime nowTIme = LocalDateTime.of(now.getYear(),
@@ -323,16 +340,26 @@ public class RdfParseService {
 
             String fileCreateTIme = nowTIme.toString().replaceAll("[-T:]", "");
 
-            String targetPath = path + pathSeperator + programId + pathSeperator + dcatInfo.getDcatSeq() + pathSeperator + programId;
             String fileName = programId + "_" + fileCreateTIme;
 
-            File dataserviceFile = new File(targetPath);
+            //임시로 DcatSeq로 생성 파일들 구분
+            String filePath  = dataserviceTargetPath + File.separator + dcatInfo.getDcatSeq();
+
+            //파일경로 생성
+            File dataserviceFile = new File(filePath);
             if (!dataserviceFile.exists()) {
                 System.out.println("파일경로생성");
                 dataserviceFile.mkdirs();
             }
 
-            String DataServiceContent = seperator + catalogDataService + newLine
+            //DCAT 파일 내용 제작
+            String DataServiceContent = defaultPrefix + newLine
+                    + rdfPrefix + newLine
+                    + rdfsPrefix + newLine
+                    + dcatPrefix + newLine
+                    + dctPreFix + newLine
+                    + newLine
+                    + seperator + catalogDataService + newLine
                     + "a dcat" + seperator + catalogDataService + space + semiCol + newLine
                     + tab + "dct" + seperator + "endpointUrl" + space + dcatInfo.getDataserviceEndpointUrl() + "@ko" + space + semiCol + newLine
                     + tab + "dct" + seperator + "endpointDescripton" + space + dcatInfo.getDataserviceEndpointDescripton() + "@ko" + space + semiCol + newLine
@@ -341,12 +368,14 @@ public class RdfParseService {
             System.out.println(DataServiceContent);
 
             //파일 경로만 생성되었다가 파일이 생성된다
-
             FileOutputStream fos = new FileOutputStream(dataserviceFile + File.separator + fileName + ".rdf");
             byte[] content = DataServiceContent.getBytes();
             fos.write(content);
             fos.flush();
             fos.close();
         }
+
+        //리소스 파일 생성 폴더로 옮기기
+
     }
 }

@@ -7,26 +7,33 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-
 @Component
 public class ParamListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Value("${param1:D:\\test.csv}")
-    private String param1;
+    @Value("${appHome:/appdata}")
+    private String appHome;
 
-    @Value("${param2:defaultValue}")
-    private String param2;
+    @Value("${programId:test}")
+    private String programId;
+
+    @Value("${creationCycle:HH}")
+    private String creationCycle;
+
+    @Value("${resourceDir:tmp}")
+    private String resourceDir;
+
+    @Value("${toUpload:to_upload_data}")
+    private String toUpload;
 
     @Autowired
     private RdfParseService rdfParseService;
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-//        try {
-//            rdfParseService.rdfParsing(param1, param2);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            rdfParseService.createFile(appHome, programId, creationCycle, resourceDir, toUpload);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -8,11 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.regex.Pattern;
-
 @Slf4j
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -40,24 +35,7 @@ class RdfParseServiceTest {
     @Test
     public void test3() throws Exception {
         System.out.println("쿼리 시작");
-        rdfParseService.createDcat("tableKey");
+//        rdfParseService.createDcat("tableKey");
 
     }
-
-//    @Test
-//    public void test4() {
-//        LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime fileTime = LocalDateTime.of(now.getYear(),
-//                now.getMonth(), now.getDayOfMonth(), now.getHour(), now.getMinute(), now.getSecond());
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-//        fileTime.format(formatter);
-//
-//
-//        String fileName = fileTime.toString();
-//        String s = fileName.replaceAll("[-T:]", "");
-//
-//        System.out.println("AA_" + s);
-//        System.out.println(s);
-//
-//    }
 }
