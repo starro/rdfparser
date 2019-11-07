@@ -47,30 +47,6 @@
         <result column="DataService_servesDataset" property="dataserviceServesDataset"/>
     </resultMap>
 
-    <select id="selectDatasettInfoList" parameterType="com.list.fh.rdfparser.model.DcatDatasetInfo"
-            resultMap="datasetMap">
-        SELECT  Dcat_seq,
-                DATASET_accessRights,
-                DATASET_conformsTo,
-                DATASET_contactPoint,
-                DATASET_creator,
-                DATASET_description,
-                DATASET_title,
-                DATASET_issued,
-                DATASET_modified,
-                DATASET_language,
-                DATASET_publisher,
-                DATASET_identifier,
-                DATASET_theme,
-                DATASET_type,
-                DATASET_relation,
-                DATASET_keyword,
-                DATASET_license,
-                DATASET_distribution,
-                DATASET_spatial
-        FROM    nl_test.sample_dcat
-    </select>
-
     <select id="selectDatasetInfoList" parameterType="com.list.fh.rdfparser.model.DcatDatasetInfo"
             resultMap="datasetMap">
         SELECT  Dcat_seq,
@@ -92,7 +68,7 @@
                 DATASET_license,
                 DATASET_distribution,
                 DATASET_spatial
-        FROM    nl_test.sample_dcat
+        FROM    sample_dcat
     </select>
 
     <select id="selectDistributionInfoList" parameterType="com.list.fh.rdfparser.model.DcatDistributionInfo"
@@ -108,7 +84,7 @@
                 Distribution_spatialResolutionlnMeters,
                 Distribution_format,
                 Distribution_compressFormat
-        FROM    nl_test.sample_dcat
+        FROM    sample_dcat
     </select>
 
     <select id="selectDataserviceInfoList" parameterType="com.list.fh.rdfparser.model.DcatDataserviceInfo"
@@ -117,6 +93,6 @@
                 DataService_endpointURL,
                 DataService_endpointDescripton,
                 DataService_servesDataset
-        FROM    nl_test.sample_dcat
+        FROM    sample_dcat
     </select>
 </mapper>

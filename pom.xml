@@ -10,8 +10,8 @@
     </parent>
     <groupId>com.list.fh</groupId>
     <artifactId>rdf-parser</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>rdf-parser</name>
+    <version>1.0</version>
     <description>Demo project for Spring Boot</description>
 
     <properties>
@@ -51,6 +51,18 @@
             <groupId>org.bgee.log4jdbc-log4j2</groupId>
             <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
             <version>1.16</version>
+        </dependency>
+
+        <!-- Logback -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
         <dependency>
