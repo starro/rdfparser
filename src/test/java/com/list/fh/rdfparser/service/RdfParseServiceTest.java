@@ -29,12 +29,13 @@ class RdfParseServiceTest {
 
     @Test
     public void test2() throws Exception {
-//        rdfParseService.processExecute("D:\\test.csv", "");
+        rdfParseService.createDcatFileByCSV("D:\\dcat_NL-0001.csv","D:\\tmp\\newfile.dcat");
+//        rdfParseService.rdfParsing("D:\\appHome","nl","HH","D:\\Italy-TOT-1996-2008-pubexp.csv","D\\AA");
     }
 
     @Test
     public void test3() throws Exception {
-        System.out.println("쿼리 시작");
+//        System.out.println("쿼리 시작");
 //        rdfParseService.createDcat("tableKey");
 
     }

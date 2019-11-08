@@ -10,26 +10,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class ParamListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Value("${appHome:/appdata}")
-    private String appHome;
 
-    @Value("${metaReadDiv:default_value}")
-    private String metaReadDiv;
+    @Value("${type:default_value}")
+    private String type;
 
-    @Value("${programId:default_value}")
-    private String programId;
+    @Value("${source:default_value}")
+    private String source;
 
-    @Value("${creationCycle:default_value}")
-    private String creationCycle;
-
-    @Value("${metaResourceDir:csv}")
-    private String metaResourceDir;
-
-    @Value("${dataResourceDir:default_value}")
-    private String dataResourceDir;
-
-    @Value("${toUploadDir:default_value}")
-    private String toUploadDir;
+    @Value("${target:default_value}")
+    private String target;
 
     @Autowired
     private RdfParseService rdfParseService;
@@ -40,15 +29,10 @@ public class ParamListener implements ApplicationListener<ContextRefreshedEvent>
         try {
 
             //메타데이터를 생성할 방식이 csv 파일과 DB로 구분된다.
-            if (metaReadDiv.equals("csv")) {
-                rdfParseService.createDcatFileByCSV(appHome, programId, creationCycle, metaResourceDir, toUploadDir);
-            } else if(metaReadDiv.equals("DB")){
-                rdfParseService.createDcatFileByDB(appHome, programId, creationCycle, toUploadDir);
-            }
-
-            //RDF파일로 변경할 csv파일 경로가 있으면 RDF파싱 시작
-            if (!dataResourceDir.equals("default_value")) {
-                rdfParseService.rdfParsing(appHome, programId, creationCycle, dataResourceDir, toUploadDir);
+            if (type.equals("dcat")) {
+                rdfParseService.createDcatFileByCSV(source, target);
+            } else if (type.equals("rdf")) {
+                rdfParseService.rdfParsing(source, target);
             }
         } catch (Exception e) {
             e.printStackTrace();

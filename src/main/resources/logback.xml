@@ -4,7 +4,7 @@
     <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>./rdfparser.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <fileNamePattern>./rdfparser.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <!-- or whenever the file size reaches 100MB -->
                 <maxFileSize>100MB</maxFileSize>

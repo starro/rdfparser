@@ -234,9 +234,9 @@ public class RdfParseService {
         }
     }
 
-    public void createDcatFileByCSV(String appHome, String programId, String creationCycle, String metaResourceDir, String toUploadDir) throws Exception {
+    public void createDcatFileByCSV(String source, String target) throws Exception {
 
-        File csvFile = new File(metaResourceDir);
+        File csvFile = new File(source);
 
         CsvMapper mapper = new CsvMapper();
         CsvSchema csvSchema = CsvSchema.emptySchema().withHeader();
@@ -244,9 +244,6 @@ public class RdfParseService {
         MappingIterator<Map<String, String>> it = mapper.readerFor(Map.class)
                 .with(csvSchema)
                 .readValues(csvFile);
-
-        //생성할 Dcat 파일 공통 경로명 제작
-        String targetPath = toUploadDir + File.separator + programId + File.separator + creationCycle;
 
         //프리픽스 선언
         String defaultPrefix = "@prefix : <http://example.org/> .";
@@ -270,10 +267,7 @@ public class RdfParseService {
 
         LocalDateTime now;
 
-        //데이터셋 디렉토리 생성
-        String datasetTargetPath = targetPath + File.separator + catalogDataSet;
-
-        //DATASET
+        //dcat 생성 시작
         while (it.hasNext()) {
             Map<String, String> rowAsMap = it.next();
 
@@ -284,19 +278,9 @@ public class RdfParseService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
             nowTIme.format(formatter);
             String fileCreateTIme = nowTIme.toString().replaceAll("[-T:]", "");
-            String fileName = programId + "_" + fileCreateTIme;
 
-            String datasetFilePath = datasetTargetPath + File.separator + rowAsMap.get("Dcat_seq");
-
-            //파일경로 생성
-            File datasetFile = new File(datasetFilePath);
-
-            if (!datasetFile.exists()) {
-                logger.info("파일경로생성");
-                datasetFile.mkdirs();
-            }
             //DCAT 파일 내용 제작
-            String datasetContent =
+            String dcatContent =
                     defaultPrefix + newLine
                             + rdfPrefix + newLine
                             + rdfsPrefix + newLine
@@ -323,36 +307,7 @@ public class RdfParseService {
                             + tab + "dct" + seperator + "license" + space + rowAsMap.get("DATASET_license") + space + semiCol + newLine
                             + tab + "dcat" + seperator + "distribution" + space + rowAsMap.get("DATASET_distribution") + space + semiCol + newLine
                             + tab + "dct" + seperator + "spatial" + space + rowAsMap.get("DATASET_spatial") + space + semiCol + newLine
-                            + tab + terminator;
-
-            logger.info(datasetContent);
-
-            //파일 경로만 생성되었다가 파일이 생성된다
-            FileOutputStream datasetFos = new FileOutputStream(datasetFile + File.separator + fileName + ".dcat");
-            byte[] datasetByte = datasetContent.getBytes();
-            datasetFos.write(datasetByte);
-            datasetFos.flush();
-            datasetFos.close();
-
-            //디스트리뷰션 디렉토리 생성
-            String distributionTargetPath = targetPath + File.separator + catalogDistribution;
-            //생성 파일 구분
-            String distributionFilePath = distributionTargetPath + File.separator + rowAsMap.get("Dcat_seq");
-
-            // 파일경로 생성
-            File distributionFile = new File(distributionFilePath);
-
-            if (!distributionFile.exists()) {
-                logger.info("파일경로생성");
-                distributionFile.mkdirs();
-            }
-            //DCAT 파일 내용 제작
-            String distributionContent =
-                    defaultPrefix + newLine
-                            + rdfPrefix + newLine
-                            + rdfsPrefix + newLine
-                            + dcatPrefix + newLine
-                            + dctPreFix + newLine
+                            + tab + terminator + newLine
                             + newLine
                             + seperator + catalogDistribution + newLine
                             + tab + "a dcat" + seperator + catalogDistribution + space + semiCol + newLine
@@ -366,55 +321,28 @@ public class RdfParseService {
                             + tab + "dcat" + seperator + "spatialResolutionlnMeters" + space + rowAsMap.get("Distribution_spatialResolutionlnMeters") + space + semiCol + newLine
                             + tab + "dct" + seperator + "format" + space + rowAsMap.get("Distribution_format") + space + semiCol + newLine
                             + tab + "dcat" + seperator + "compressFormat" + space + rowAsMap.get("Distribution_compressFormat") + space + semiCol + newLine
+                            + tab + terminator + newLine
+                            + newLine
+                            + seperator + catalogDataService + newLine
+                            + tab + "a dcat" + seperator + catalogDataService + space + semiCol + newLine
+                            + tab + "dcat" + seperator + "endpointUrl" + space + rowAsMap.get("DataService_endpointURL") + space + semiCol + newLine
+                            + tab + "dcat" + seperator + "endpointDescripton" + space + space + rowAsMap.get("DataService_endpointDescripton") + space + semiCol + newLine
+                            + tab + "dcat" + seperator + "servesDataset" + space + space + rowAsMap.get("DataService_servesDataset") + space + semiCol + newLine
                             + tab + terminator;
 
-            logger.info(distributionContent);
+            logger.info(dcatContent);
 
-            //파일 경로만 생성되었다가 파일이 생성된다
-            FileOutputStream distributionFos = new FileOutputStream(distributionFile + File.separator + fileName + ".dcat");
-            byte[] distiributionByte = distributionContent.getBytes();
-            distributionFos.write(distiributionByte);
-            distributionFos.flush();
-            distributionFos.close();
-
-            //데이터 서비스 디렉토리 생성
-            String dataserviceTargetPath = targetPath + File.separator + catalogDataService;
-
-            String dataSerciceFilePath = dataserviceTargetPath + File.separator + rowAsMap.get("Dcat_seq");
-
-            //파일경로 생성
-            File dataserviceFile = new File(dataSerciceFilePath);
-            if (!dataserviceFile.exists()) {
-                logger.info("파일경로생성");
-                dataserviceFile.mkdirs();
-            }
-
-            //DCAT 파일 내용 제작
-            String DataServiceContent = defaultPrefix + newLine
-                    + rdfPrefix + newLine
-                    + rdfsPrefix + newLine
-                    + dcatPrefix + newLine
-                    + dctPreFix + newLine
-                    + newLine
-                    + seperator + catalogDataService + newLine
-                    + tab + "a dcat" + seperator + catalogDataService + space + semiCol + newLine
-                    + tab + "dcat" + seperator + "endpointUrl" + space + rowAsMap.get("DataService_endpointURL") + space + semiCol + newLine
-                    + tab + "dcat" + seperator + "endpointDescripton" + space + space + rowAsMap.get("DataService_endpointDescripton") + space + semiCol + newLine
-                    + tab + "dcat" + seperator + "servesDataset" + space + space + rowAsMap.get("DataService_servesDataset") + space + semiCol + newLine
-                    + tab + terminator;
-            logger.info(DataServiceContent);
-
-            //파일 경로만 생성되었다가 파일이 생성된다
-            FileOutputStream dataserviceFos = new FileOutputStream(dataserviceFile + File.separator + fileName + ".dcat");
-            byte[] dataserviceByte = DataServiceContent.getBytes();
-            dataserviceFos.write(dataserviceByte);
-            dataserviceFos.flush();
-            dataserviceFos.close();
+            //파일이 생성된다
+            FileOutputStream dcatFos = new FileOutputStream(target);
+            byte[] dcatByte = dcatContent.getBytes();
+            dcatFos.write(dcatByte);
+            dcatFos.flush();
+            dcatFos.close();
         }
     }
 
-    public void rdfParsing(String appHome, String programId, String creationCycle, String resourceDir, String toUploadDir) throws Exception {
-        File csvFile = new File(resourceDir);
+    public void rdfParsing(String source, String target) throws Exception {
+        File csvFile = new File(source);
 
         CsvMapper mapper = new CsvMapper();
         CsvSchema csvSchema = CsvSchema.emptySchema().withHeader();
@@ -425,7 +353,7 @@ public class RdfParseService {
 
         LocalDate currentDate = LocalDate.now();
 
-        String targetPath = toUploadDir + File.separator + programId + File.separator + creationCycle;
+//        String targetPath = toUploadDir + File.separator + programId;
 
         ModelBuilder builder = new ModelBuilder();
         builder
@@ -440,21 +368,20 @@ public class RdfParseService {
             logger.info(rowAsMap.keySet().toString());
             logger.info(rowAsMap.toString());
             for (String element : rowAsMap.keySet()) {
-                builder.add(programId + ":" + element, rowAsMap.get(element).toString());
+                builder.add(csvFile.getName() + ":" + element, rowAsMap.get(element).toString());
             }
         }
 
-        String fileName = programId;
         Model model = builder.build();
 
-        File targetFilePath = new File(targetPath);
+        File targetFilePath = new File(target);
 
         if (!targetFilePath.exists()) {
             logger.info("파일경로생성");
             targetFilePath.mkdirs();
         }
 
-        FileOutputStream fos = new FileOutputStream(targetFilePath + File.separator + fileName + ".rdf");
+        FileOutputStream fos = new FileOutputStream(target + ".rdf");
 
         Rio.write(model, fos, RDFFormat.RDFXML);
         fos.close();
