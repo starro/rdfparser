@@ -1,6 +1,5 @@
 package com.list.fh.rdfparser.service;
 
-import com.list.fh.rdfparser.mapper.DcatInfoMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -14,9 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 class RdfParseServiceTest {
 
     @Autowired
-    private DcatInfoMapper mapper;
-
-    @Autowired
     private RdfParseService rdfParseService;
 
     @Test
@@ -26,11 +22,10 @@ class RdfParseServiceTest {
 //        rdfParseService.readCSV("D:\\test.csv");
     }
 
-
     @Test
     public void test2() throws Exception {
-        rdfParseService.createDcatFileByCSV("D:\\dcat_NL-0001.csv","D:\\tmp\\newfile.dcat");
-//        rdfParseService.rdfParsing("D:\\appHome","nl","HH","D:\\Italy-TOT-1996-2008-pubexp.csv","D\\AA");
+        rdfParseService.createDcatFileByCSV("D:\\dcat_master.csv","D:\\tmp\\sample_dcat_master.dcat");
+//        rdfParseService.rdfParsing("D:\\Italy-TOT-1996-2008-pubexp.csv","D:\\tmp\\newfile.rdf", "http://slb-71156.gov-ncloudslb.com/");
     }
 
     @Test
