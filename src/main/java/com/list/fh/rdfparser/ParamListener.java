@@ -1,5 +1,6 @@
 package com.list.fh.rdfparser;
 
+import com.list.fh.rdfparser.service.RdfParseForLargeDataService;
 import com.list.fh.rdfparser.service.RdfParseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,9 @@ public class ParamListener implements ApplicationListener<ContextRefreshedEvent>
     @Autowired
     private RdfParseService rdfParseService;
 
+    @Autowired
+    private RdfParseForLargeDataService rdfParseForLargeDataService;
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
 
@@ -33,7 +37,7 @@ public class ParamListener implements ApplicationListener<ContextRefreshedEvent>
             if (type.equals("dcat")) {
                 rdfParseService.createDcatFileByCSV(source, target);
             } else if (type.equals("rdf")) {
-                rdfParseService.rdfParsing(source, target, url);
+                rdfParseForLargeDataService.rdfParsing(source, target, url);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -175,7 +175,6 @@ public class RdfParseService {
 
         int sourceIndex = sourcePath.lastIndexOf(File.separator);
         String sourceFileName = sourcePath.substring(sourceIndex + 1);
-        String sourceFilePath = sourcePath.substring(0, sourceIndex + 1);
 
         String title = sourceFileName.replaceAll(".csv", "");
 

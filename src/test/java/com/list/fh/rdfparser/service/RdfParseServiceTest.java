@@ -24,8 +24,8 @@ class RdfParseServiceTest {
 
     @Test
     public void test2() throws Exception {
-        rdfParseService.createDcatFileByCSV("D:\\dcat_master.csv","D:\\tmp\\sample_dcat_master.dcat");
-//        rdfParseService.rdfParsing("D:\\Italy-TOT-1996-2008-pubexp.csv","D:\\tmp\\newfile.rdf", "http://slb-71156.gov-ncloudslb.com/");
+//        rdfParseService.createDcatFileByCSV("D:\\dcat_master.csv","D:\\tmp\\sample_dcat_master.dcat");
+        rdfParseService.rdfParsing("D:\\italy-tot-1996-2008-pubexp.csv", "D:\\tmp\\newLargeFile.rdf", "http://slb-71156.gov-ncloudslb.com/");
     }
 
     @Test
