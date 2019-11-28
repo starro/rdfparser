@@ -170,13 +170,10 @@ public class RdfParseForLargeDataService {
             while ((line = reader.readLine()) != null && result.size() < numLastLineToRead) {
                 result.add(line);
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return result;
-
     }
 
 }
